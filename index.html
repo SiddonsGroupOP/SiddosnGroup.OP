@@ -280,9 +280,14 @@ async function loadAll() {
   }).join('') : empty(4, 'No active listings'));
 
   // Upcoming Listings
-  set('s-upcoming', upcoming.length);
-  set('c-upcoming', upcoming.length);
-  html('b-upcoming', upcoming.length ? upcoming.map(r =>
+  // Filter upcoming strictly - must have Owner or Status to be a real upcoming listing
+  const upcomingData = upcoming.filter(r => 
+    r['Address'] && r['Address'].trim() !== '' && r['Address'].trim() !== 'Address' &&
+    (r['Owner'] || r['Status'])
+  );
+  set('s-upcoming', upcomingData.length);
+  set('c-upcoming', upcomingData.length);
+  html('b-upcoming', upcomingData.length ? upcomingData.map(r =>
     `<tr><td>${r['Address']||''}</td><td>${r['Owner']||''}</td><td>${r['Price']||''}</td><td>${badge(r['Status'])}</td></tr>`
   ).join('') : empty(4, 'No upcoming listings'));
 
