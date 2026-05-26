@@ -116,7 +116,7 @@
   <div class="section-row">
     <div class="card">
       <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:var(--blue)"></div>Active Listings</div><span class="card-count" id="c-listings">—</span></div>
-      <table class="data-table"><thead><tr><th>Address</th><th>Exp Date</th><th>Days Left</th><th>Price</th></tr></thead><tbody id="b-listings"><tr class="empty-row"><td colspan="4">Loading...</td></tr></tbody></table>
+      <table class="data-table"><thead><tr><th>Address</th><th>Exp Date</th><th>Days Left</th><th>Price</th><th>Comm %</th></tr></thead><tbody id="b-listings"><tr class="empty-row"><td colspan="4">Loading...</td></tr></tbody></table>
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:var(--yellow)"></div>Upcoming Listings</div><span class="card-count" id="c-upcoming">—</span></div>
@@ -276,7 +276,7 @@ async function loadAll() {
     const priceHTML = reduced
       ? `<span class="price-red">↓ ${r['Price']}</span> <span style="color:var(--mid);font-size:10px">was ${r['Old Price']}</span>`
       : r['Price'];
-    return `<tr><td>${r['Address']||''}</td><td>${r['Expiration Date']||''}</td><td>${daysChip(r['Expiration Date'])}</td><td>${priceHTML}</td></tr>`;
+    return `<tr><td>${r['Address']||''}</td><td>${r['Expiration Date']||''}</td><td>${daysChip(r['Expiration Date'])}</td><td>${priceHTML}</td><td>${r['Commission %']||''}</td></tr>`;
   }).join('') : empty(4, 'No active listings'));
 
   // Upcoming Listings
@@ -314,7 +314,7 @@ async function loadAll() {
   // Buyers
   set('c-buyers', buyers.length);
   html('b-buyers', buyers.length ? buyers.map(r =>
-    `<tr><td>${r['Name']||''}</td><td>${r['Contact']||''}</td><td>${r['Looking For']||''}</td><td>${r['Visit Date']||'—'}</td></tr>`
+    `<tr><td>${r['Name']||r['Full Name']||''}</td><td>${r['Contact']||''}</td><td>${r['Looking For']||''}</td><td>${r['Visit Date']||'—'}</td></tr>`
   ).join('') : empty(4, 'No potential buyers'));
 
   // Sellers
