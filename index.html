@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSG Operations Board</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #39374f;
+    --navy-light: #4a4766;
+    --blue: #7BA7BC;
+    --blue-light: #a8c8d8;
+    --blue-pale: #EBF3F7;
+    --blue-faint: #f4f9fb;
+    --white: #ffffff;
+    --off-white: #F9F8F5;
+    --dark: #1e1d2e;
+    --mid: #6b7280;
+    --rule: #e5e7eb;
+    --green: #22c55e;
+    --green-pale: #f0fdf4;
+    --yellow: #f59e0b;
+    --yellow-pale: #fffbeb;
+    --red: #ef4444;
+    --red-pale: #fef2f2;
+    --orange: #f97316;
+    --orange-pale: #fff7ed;
+    --purple: #8b5cf6;
+    --purple-pale: #f5f3ff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--off-white); color:var(--dark); min-height:100vh; }
+
+  .header {
+    background:var(--navy); padding:0 32px; height:64px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:100;
+    box-shadow:0 2px 20px rgba(57,55,79,0.3);
+  }
+  .header-left { display:flex; align-items:center; gap:16px; }
+  .logo-mark {
+    width:36px; height:36px; background:var(--blue); border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:14px; color:white; letter-spacing:0.5px;
+  }
+  .header-title { color:white; font-size:16px; font-weight:600; }
+  .header-sub { color:var(--blue-light); font-size:12px; margin-top:1px; }
+  .header-right { display:flex; align-items:center; gap:20px; }
+  .live-badge {
+    display:flex; align-items:center; gap:6px;
+    background:rgba(123,167,188,0.15); border:1px solid rgba(123,167,188,0.3);
+    border-radius:20px; padding:4px 12px; font-size:11px; color:var(--blue-light); font-weight:500;
+  }
+  .live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .date-display { color:var(--blue-light); font-size:12px; font-family:'DM Mono',monospace; }
+
+  .main { padding:24px 28px; max-width:1600px; margin:0 auto; }
+
+  .stats-row { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:24px; }
+  .stat-card {
+    background:white; border-radius:12px; padding:16px 20px;
+    border:1px solid var(--rule); position:relative; overflow:hidden;
+  }
+  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+  .stat-card.blue::before { background:var(--blue); }
+  .stat-card.green::before { background:var(--green); }
+  .stat-card.yellow::before { background:var(--yellow); }
+  .stat-card.orange::before { background:var(--orange); }
+  .stat-card.purple::before { background:var(--purple); }
+  .stat-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--mid); margin-bottom:6px; }
+  .stat-value { font-size:26px; font-weight:700; color:var(--navy); line-height:1; }
+  .stat-sub { font-size:11px; color:var(--mid); margin-top:4px; }
+
+  .section-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  .section-row.full { grid-template-columns:1fr; }
+
+  .card { background:white; border-radius:14px; border:1px solid var(--rule); overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.04); }
+  .card-header {
+    padding:14px 20px 12px; display:flex; align-items:center;
+    justify-content:space-between; border-bottom:1px solid var(--rule);
+  }
+  .card-title {
+    font-size:11px; font-weight:700; text-transform:uppercase;
+    letter-spacing:1.2px; color:var(--navy); display:flex; align-items:center; gap:8px;
+  }
+  .card-title-dot { width:8px; height:8px; border-radius:50%; }
+  .card-count { background:var(--blue-pale); color:var(--navy); font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; }
+
+  .data-table { width:100%; border-collapse:collapse; }
+  .data-table th {
+    background:var(--navy); color:white; font-size:9px; font-weight:600;
+    text-transform:uppercase; letter-spacing:0.8px; padding:8px 14px; text-align:left;
+  }
+  .data-table td {
+    padding:10px 14px; font-size:12px; color:var(--dark);
+    border-bottom:1px solid var(--rule); vertical-align:middle;
+  }
+  .data-table tr:last-child td { border-bottom:none; }
+  .data-table tr:nth-child(even) td { background:var(--blue-faint); }
+  .data-table tr:hover td { background:var(--blue-pale); transition:background 0.15s; }
+
+  .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:600; white-space:nowrap; }
+  .badge-green { background:var(--green-pale); color:#16a34a; }
+  .badge-yellow { background:var(--yellow-pale); color:#d97706; }
+  .badge-blue { background:var(--blue-pale); color:var(--navy); }
+  .badge-orange { background:var(--orange-pale); color:#ea580c; }
+  .badge-red { background:var(--red-pale); color:#dc2626; }
+  .badge-purple { background:var(--purple-pale); color:#7c3aed; }
+  .badge-grey { background:#f3f4f6; color:#6b7280; }
+
+  .days-chip { display:inline-flex; align-items:center; font-family:'DM Mono',monospace; font-size:11px; font-weight:500; padding:3px 8px; border-radius:6px; }
+  .days-urgent { background:var(--red-pale); color:#dc2626; }
+  .days-warn { background:var(--yellow-pale); color:#d97706; }
+  .days-ok { background:var(--green-pale); color:#16a34a; }
+
+  .price-reduction { display:inline-flex; align-items:center; gap:4px; color:#dc2626; font-size:11px; font-weight:500; }
+  .price-reduction::before { content:'↓'; }
+
+  .section-divider { display:flex; align-items:center; gap:12px; margin:24px 0 16px; }
+  .section-divider-line { flex:1; height:1px; background:var(--rule); }
+  .section-divider-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--mid); white-space:nowrap; }
+
+  .comm-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--rule); }
+  .comm-cell { background:white; padding:14px 16px; text-align:center; }
+  .comm-cell:nth-child(even) { background:var(--blue-faint); }
+  .comm-month { font-size:10px; color:var(--mid); font-weight:600; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+  .comm-amount { font-size:16px; font-weight:700; color:var(--navy); font-family:'DM Mono',monospace; }
+  .comm-net { font-size:10px; color:var(--mid); margin-top:2px; }
+
+  .empty-row td { text-align:center; color:var(--mid); font-size:11px; font-style:italic; padding:20px !important; background:white !important; }
+  .loading-row td { text-align:center; color:var(--blue); font-size:11px; padding:16px !important; background:white !important; }
+
+  .last-updated { text-align:center; padding:20px; font-size:11px; color:var(--mid); font-family:'DM Mono',monospace; }
+
+  .refresh-btn {
+    background:var(--blue-pale); border:1px solid var(--blue); color:var(--navy);
+    padding:6px 16px; border-radius:20px; font-size:11px; font-weight:600;
+    cursor:pointer; font-family:'DM Sans',sans-serif;
+  }
+  .refresh-btn:hover { background:var(--blue); color:white; transition:all 0.2s; }
+
+  @media (max-width:768px) {
+    .main { padding:16px; }
+    .stats-row { grid-template-columns:repeat(2,1fr); }
+    .stats-row .stat-card:last-child { grid-column:span 2; }
+    .section-row { grid-template-columns:1fr; }
+    .header { padding:0 16px; }
+    .header-sub { display:none; }
+    .comm-grid { grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="logo-mark">DS</div>
+    <div>
+      <div class="header-title">DSG Operations Board</div>
+      <div class="header-sub">David Siddons Group · Douglas Elliman Real Estate</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="refresh-btn" onclick="loadAllData()">↻ Refresh</button>
+    <div class="live-badge"><div class="live-dot"></div>Live</div>
+    <div class="date-display" id="current-date"></div>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card blue">
+      <div class="stat-label">Active Listings</div>
+      <div class="stat-value" id="stat-listings">—</div>
+      <div class="stat-sub" id="stat-listings-sub">Loading...</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Active Transactions</div>
+      <div class="stat-value" id="stat-transactions">—</div>
+      <div class="stat-sub" id="stat-transactions-sub">Loading...</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-label">Upcoming Listings</div>
+      <div class="stat-value" id="stat-upcoming">—</div>
+      <div class="stat-sub">In negotiation pipeline</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">Active Offers</div>
+      <div class="stat-value" id="stat-offers">—</div>
+      <div class="stat-sub">Pending follow-up</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">Potential Pipeline</div>
+      <div class="stat-value" id="stat-pipeline">—</div>
+      <div class="stat-sub">Buyers + sellers</div>
+    </div>
+  </div>
+
+  <!-- ACTIVE LISTINGS + UPCOMING LISTINGS -->
+  <div class="section-row">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-dot" style="background:var(--blue)"></div>Active Listings</div>
+        <span class="card-count" id="count-active-listings">—</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Address</th><th>Exp Date</th><th>Days Left</th><th>Price</th></tr></thead>
+        <tbody id="active-listings-body"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-dot" style="background:var(--yellow)"></div>Upcoming Listings</div>
+        <span class="card-count" id="count-upcoming">—</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Address</th><th>Owner</th><th>Price</th><th>Status</th></tr></thead>
+        <tbody id="upcoming-listings-body"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TRANSACTIONS + OFFERS -->
+  <div class="section-row">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-dot" style="background:var(--green)"></div>Active Transactions</div>
+        <span class="card-count" id="count-transactions">—</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Address</th><th>Purchase Price</th><th>Comm %</th><th>Inspection</th><th>Closing</th></tr></thead>
+        <tbody id="transactions-body"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-dot" style="background:var(--orange)"></div>Offers</div>
+        <span class="card-count" id="count-offers">—</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Address</th><th>Offer Price</th><th>Status</th></tr></thead>
+        <tbody id="offers-body"><tr class="loading-row"><td colspan="3">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SHOWINGS -->
+  <div class="section-row full">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-dot" style="background:var(--purple)"></div>Showings</div>
+        <span class="card-count" id="count-showings">—</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Address</th><th>Date</th><th>Time</th><th>Agent</th><th>Requested By</th><th>Phone</th><th>Email</th></tr></thead>
+        <tbody id="showings-body"><tr class="loading-row"><td colspan="7">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Leads & Pipeline</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- POTENTIAL BUYERS + SELLERS -->
+  <div class="section-row">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-dot" style="background:var(--blue)"></div>Potential Buyers</div>
+        <span class="card-count" id="count-buyers">—</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>Contact</th><th>Looking For</th><th>Visit Date</th></tr></thead>
+        <tbody id="buyers-body"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-dot" style="background:var(--navy)"></div>Potential Sellers</div>
+        <span class="card-count" id="count-sellers">—</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Owner</th><th>Address</th><th>Contact</th><th>Notes</th></tr></thead>
+        <tbody id="sellers-body"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Marketing & Projects</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- CONTENT + PROJECTS -->
+  <div class="section-row">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-dot" style="background:var(--green)"></div>Marketing & Content This Week</div>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Piece / Campaign</th><th>Channel</th><th>Assigned To</th><th>Due Date</th><th>Status</th></tr></thead>
+        <tbody id="content-body"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="card-title-dot" style="background:var(--purple)"></div>Projects & Ideas</div>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Project</th><th>Description</th><th>Assigned To</th><th>Due</th><th>Status</th></tr></thead>
+        <tbody id="projects-body"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">Commissions</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- COMMISSIONS -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header">
+      <div class="card-title"><div class="card-title-dot" style="background:var(--yellow)"></div>Commission Overview · 2026</div>
+    </div>
+    <div class="comm-grid" id="commissions-grid">
+      <div class="comm-cell"><div class="comm-month">Loading</div><div class="comm-amount">—</div></div>
+    </div>
+  </div>
+
+  <div class="last-updated" id="last-updated">Loading data from Google Sheets...</div>
+
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const SHEET_ID = '2PACX-1vSR5zL7OWr2m7l0gnNm548tXzq3-tWMTxPI3RG_bfwXUt93EmKmoMglseNVim6FjnGix20hDMm5tFZf';
+
+const TABS = {
+  'Active Listings':    0,
+  'Upcoming Listings':  1,
+  'Showings':           2,
+  'Transactions':       3,
+  'Offers':             4,
+  'Potential Buyers':   5,
+  'Potential Sellers':  6,
+  'Marketing Content':  7,
+  'Projects Ideas':     8,
+  'Commissions':        9,
+};
+
+function sheetURL(gid) {
+  return `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${gid}&single=true&output=csv`;
+}
+
+// Tab GIDs — these match the tab order (0-indexed position maps to gid)
+// Google Sheets uses gid numbers. For published CSV by tab name we use the tab index param
+function sheetURLByIndex(index) {
+  return `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv&gid=${index}`;
+}
+
+// Simpler: use the named tab approach
+function tabURL(tabName) {
+  return `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv`;
+}
+
+// We fetch each sheet by appending &gid=SHEET_GID
+// Since we don't have GIDs yet, we use the sheet index trick
+async function fetchSheet(sheetIndex) {
+  // Google published CSV URL with sheet index
+  const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv&gid=${sheetIndex}`;
+  try {
+    const res = await fetch(url);
+    const text = await res.text();
+    return parseCSV(text);
+  } catch(e) {
+    console.error('Fetch error:', e);
+    return [];
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+  return lines.slice(1).map(line => {
+    const vals = line.match(/(".*?"|[^,]+|(?<=,)(?=,)|^(?=,)|(?<=,)$)/g) || [];
+    const row = {};
+    headers.forEach((h, i) => {
+      row[h] = (vals[i] || '').replace(/^"|"$/g, '').trim();
+    });
+    return row;
+  }).filter(r => Object.values(r).some(v => v !== ''));
+}
+
+function daysLeft(dateStr) {
+  if (!dateStr) return null;
+  const exp = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  return Math.round((exp - today) / (1000*60*60*24));
+}
+
+function daysChip(dateStr) {
+  const d = daysLeft(dateStr);
+  if (d === null) return '—';
+  if (d <= 0) return `<span class="days-chip days-urgent">Expired</span>`;
+  if (d <= 30) return `<span class="days-chip days-warn">${d}d</span>`;
+  return `<span class="days-chip days-ok">${d}d</span>`;
+}
+
+function statusBadge(status) {
+  if (!status) return '';
+  const s = status.toLowerCase();
+  if (s.includes('first') || s.includes('contact')) return `<span class="badge badge-yellow">${status}</span>`;
+  if (s.includes('negotiat')) return `<span class="badge badge-blue">${status}</span>`;
+  if (s.includes('process') || s.includes('progress')) return `<span class="badge badge-orange">${status}</span>`;
+  if (s.includes('ready') || s.includes('sign')) return `<span class="badge badge-green">${status}</span>`;
+  if (s.includes('done') || s.includes('complete') || s.includes('live')) return `<span class="badge badge-green">${status}</span>`;
+  if (s.includes('pending') || s.includes('planned')) return `<span class="badge badge-grey">${status}</span>`;
+  if (s.includes('progress') || s.includes('active')) return `<span class="badge badge-orange">${status}</span>`;
+  if (s.includes('accept')) return `<span class="badge badge-green">${status}</span>`;
+  if (s.includes('reject') || s.includes('cancel')) return `<span class="badge badge-red">${status}</span>`;
+  if (s.includes('counter')) return `<span class="badge badge-yellow">${status}</span>`;
+  return `<span class="badge badge-blue">${status}</span>`;
+}
+
+function emptyRow(cols, msg='No data yet') {
+  return `<tr class="empty-row"><td colspan="${cols}">${msg}</td></tr>`;
+}
+
+// ── RENDER FUNCTIONS ──────────────────────────────────────────────────────────
+
+function renderActiveListings(rows) {
+  const body = document.getElementById('active-listings-body');
+  const count = document.getElementById('count-active-listings');
+  const statVal = document.getElementById('stat-listings');
+  const statSub = document.getElementById('stat-listings-sub');
+
+  if (!rows.length) { body.innerHTML = emptyRow(4, 'No active listings'); count.textContent='0'; statVal.textContent='0'; return; }
+
+  const data = rows.filter(r => r['Address'] || r['address']);
+  count.textContent = data.length;
+  statVal.textContent = data.length;
+
+  const expiring = data.filter(r => { const d = daysLeft(r['Expiration Date']); return d !== null && d <= 30 && d > 0; });
+  statSub.textContent = expiring.length > 0 ? `${expiring.length} expiring within 30 days` : 'All listings active';
+
+  body.innerHTML = data.map(r => {
+    const addr = r['Address'] || '';
+    const exp = r['Expiration Date'] || '';
+    const price = r['Price'] || '';
+    const reduced = r['Price Reduced'] || '';
+    const oldPrice = r['Old Price'] || '';
+    let priceHTML = price;
+    if (reduced && reduced.toLowerCase() !== 'no' && reduced !== '') {
+      priceHTML = `<span class="price-reduction">${price}</span> <span style="color:var(--mid);font-size:10px">was ${oldPrice}</span>`;
+    }
+    return `<tr><td>${addr}</td><td>${exp}</td><td>${daysChip(exp)}</td><td>${priceHTML}</td></tr>`;
+  }).join('');
+}
+
+function renderUpcomingListings(rows) {
+  const body = document.getElementById('upcoming-listings-body');
+  const count = document.getElementById('count-upcoming');
+  const stat = document.getElementById('stat-upcoming');
+  const data = rows.filter(r => r['Address'] || r['address']);
+  count.textContent = data.length;
+  stat.textContent = data.length;
+  if (!data.length) { body.innerHTML = emptyRow(4, 'No upcoming listings'); return; }
+  body.innerHTML = data.map(r =>
+    `<tr><td>${r['Address']||''}</td><td>${r['Owner']||''}</td><td>${r['Price']||''}</td><td>${statusBadge(r['Status'])}</td></tr>`
+  ).join('');
+}
+
+function renderTransactions(rows) {
+  const body = document.getElementById('transactions-body');
+  const count = document.getElementById('count-transactions');
+  const stat = document.getElementById('stat-transactions');
+  const statSub = document.getElementById('stat-transactions-sub');
+  const data = rows.filter(r => r['Address'] || r['address']);
+  count.textContent = data.length;
+  stat.textContent = data.length;
+  const next = data.reduce((acc, r) => {
+    const d = new Date(r['Closing Date']);
+    return (!acc || d < acc.date) ? {date:d, label:r['Closing Date']} : acc;
+  }, null);
+  statSub.textContent = next ? `Next closing: ${next.label}` : 'No closings scheduled';
+  if (!data.length) { body.innerHTML = emptyRow(5, 'No active transactions'); return; }
+  body.innerHTML = data.map(r =>
+    `<tr><td>${r['Address']||''}</td><td>${r['Purchase Price']||''}</td><td>${r['Commission %']||''}</td><td>${r['Inspection Date']||'—'}</td><td><strong>${r['Closing Date']||''}</strong></td></tr>`
+  ).join('');
+}
+
+function renderOffers(rows) {
+  const body = document.getElementById('offers-body');
+  const count = document.getElementById('count-offers');
+  const stat = document.getElementById('stat-offers');
+  const data = rows.filter(r => r['Address'] || r['address']);
+  count.textContent = data.length;
+  stat.textContent = data.length;
+  if (!data.length) { body.innerHTML = emptyRow(3, 'No active offers'); return; }
+  body.innerHTML = data.map(r =>
+    `<tr><td>${r['Address']||''}</td><td>${r['Offer Price']||''}</td><td>${statusBadge(r['Status'])}</td></tr>`
+  ).join('');
+}
+
+function renderShowings(rows) {
+  const body = document.getElementById('showings-body');
+  const count = document.getElementById('count-showings');
+  const data = rows.filter(r => r['Address'] || r['address']);
+  count.textContent = data.length;
+  if (!data.length) { body.innerHTML = emptyRow(7, 'No showings scheduled'); return; }
+  body.innerHTML = data.map(r =>
+    `<tr><td>${r['Address']||''}</td><td>${r['Date']||''}</td><td>${r['Time']||''}</td><td>${r['Agent']||''}</td><td>${r['Requested By']||''}</td><td>${r['Phone']||''}</td><td>${r['Email']||''}</td></tr>`
+  ).join('');
+}
+
+function renderBuyers(rows) {
+  const body = document.getElementById('buyers-body');
+  const count = document.getElementById('count-buyers');
+  const data = rows.filter(r => r['Name'] || r['name']);
+  count.textContent = data.length;
+  if (!data.length) { body.innerHTML = emptyRow(4, 'No potential buyers added'); return; }
+  body.innerHTML = data.map(r =>
+    `<tr><td>${r['Name']||''}</td><td>${r['Contact']||''}</td><td>${r['Looking For']||''}</td><td>${r['Visit Date']||'—'}</td></tr>`
+  ).join('');
+}
+
+function renderSellers(rows) {
+  const body = document.getElementById('sellers-body');
+  const count = document.getElementById('count-sellers');
+  const stat = document.getElementById('stat-pipeline');
+  const data = rows.filter(r => r['Owner'] || r['owner']);
+  count.textContent = data.length;
+  if (!data.length) { body.innerHTML = emptyRow(4, 'No potential sellers added'); return; }
+  body.innerHTML = data.map(r =>
+    `<tr><td>${r['Owner']||''}</td><td>${r['Address']||''}</td><td>${r['Contact']||''}</td><td>${r['Notes']||''}</td></tr>`
+  ).join('');
+}
+
+function renderContent(rows) {
+  const body = document.getElementById('content-body');
+  const data = rows.filter(r => r['Piece'] || r['piece']);
+  if (!data.length) { body.innerHTML = emptyRow(5, 'No content scheduled this week'); return; }
+  body.innerHTML = data.map(r =>
+    `<tr><td>${r['Piece']||''}</td><td>${r['Channel']||''}</td><td>${r['Assigned to']||r['Assigned To']||''}</td><td>${r['Due date']||r['Due Date']||''}</td><td>${statusBadge(r['Status'])}</td></tr>`
+  ).join('');
+}
+
+function renderProjects(rows) {
+  const body = document.getElementById('projects-body');
+  const data = rows.filter(r => r['Project'] || r['project']);
+  if (!data.length) { body.innerHTML = emptyRow(5, 'No projects added'); return; }
+  body.innerHTML = data.map(r =>
+    `<tr><td><strong>${r['Project']||''}</strong></td><td>${r['Description']||''}</td><td>${r['Assigned To']||''}</td><td>${r['Due Date']||'TBD'}</td><td>${statusBadge(r['Status'])}</td></tr>`
+  ).join('');
+}
+
+function renderCommissions(rows) {
+  const grid = document.getElementById('commissions-grid');
+  const data = rows.filter(r => r['Month'] || r['month']);
+  if (!data.length) {
+    grid.innerHTML = '<div class="comm-cell"><div class="comm-month">No data</div><div class="comm-amount">—</div></div>';
+    return;
+  }
+  grid.innerHTML = data.map(r =>
+    `<div class="comm-cell">
+      <div class="comm-month">${r['Month']||''}</div>
+      <div class="comm-amount">${r['Gross GCI']||'—'}</div>
+      <div class="comm-net">${r['Sales Volume'] ? 'Vol: '+r['Sales Volume'] : r['Notes']||'Gross GCI'}</div>
+    </div>`
+  ).join('');
+}
+
+function updatePipelineStat() {
+  const buyers = parseInt(document.getElementById('count-buyers').textContent) || 0;
+  const sellers = parseInt(document.getElementById('count-sellers').textContent) || 0;
+  document.getElementById('stat-pipeline').textContent = buyers + sellers;
+}
+
+// ── MAIN LOAD ─────────────────────────────────────────────────────────────────
+// Google Sheets published CSV with gid=0 gives first sheet
+// Each tab has a gid. Since we published entire doc, we access by gid
+// Tab order gids: we'll try gid=0,1,2... but Google uses actual gid numbers
+// The safest approach: fetch the HTML version to get gid numbers first
+
+async function getSheetGIDs() {
+  // Fetch the published HTML to extract gid values
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pubhtml`;
+    const res = await fetch(url);
+    const html = await res.text();
+    const matches = [...html.matchAll(/gid=(\d+)[^"]*"[^>]*>([^<]+)</g)];
+    const gids = {};
+    matches.forEach(m => { gids[m[2].trim()] = m[1]; });
+    return gids;
+  } catch(e) {
+    // Fallback: use sequential sheet index via the &sheet= param
+    return null;
+  }
+}
+
+async function fetchBySheetName(name) {
+  const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv&sheet=${encodeURIComponent(name)}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    const text = await res.text();
+    return parseCSV(text);
+  } catch(e) { return []; }
+}
+
+async function loadAllData() {
+  document.getElementById('last-updated').textContent = 'Refreshing data...';
+
+  const [
+    activeListings, upcomingListings, showings, transactions,
+    offers, buyers, sellers, content, projects, commissions
+  ] = await Promise.all([
+    fetchBySheetName('Active Listings'),
+    fetchBySheetName('Upcoming Listings'),
+    fetchBySheetName('Showings'),
+    fetchBySheetName('Transactions'),
+    fetchBySheetName('Offers'),
+    fetchBySheetName('Potential Buyers'),
+    fetchBySheetName('Potential Sellers'),
+    fetchBySheetName('Marketing Content'),
+    fetchBySheetName('Projects Ideas'),
+    fetchBySheetName('Commissions'),
+  ]);
+
+  renderActiveListings(activeListings);
+  renderUpcomingListings(upcomingListings);
+  renderTransactions(transactions);
+  renderOffers(offers);
+  renderShowings(showings);
+  renderBuyers(buyers);
+  renderSellers(sellers);
+  renderContent(content);
+  renderProjects(projects);
+  renderCommissions(commissions);
+  updatePipelineStat();
+
+  const now = new Date();
+  document.getElementById('last-updated').textContent =
+    `Last updated: ${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})} at ${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})} · Managed by Andrea · DSG Operations`;
+}
+
+// Date display
+document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US',{
+  weekday:'short', month:'short', day:'numeric', year:'numeric'
+});
+
+// Load on start
+loadAllData();
+</script>
+</body>
+</html>
