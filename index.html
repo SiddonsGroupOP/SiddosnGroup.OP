@@ -120,7 +120,7 @@
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:var(--yellow)"></div>Upcoming Listings</div><span class="card-count" id="c-upcoming">—</span></div>
-      <table class="data-table"><thead><tr><th>Address</th><th>Owner</th><th>Price</th><th>Status</th></tr></thead><tbody id="b-upcoming"><tr class="empty-row"><td colspan="4">Loading...</td></tr></tbody></table>
+      <table class="data-table"><thead><tr><th>Address</th><th>Owner</th><th>Price</th><th>Status</th><th>Notes</th></tr></thead><tbody id="b-upcoming"><tr class="empty-row"><td colspan="4">Loading...</td></tr></tbody></table>
     </div>
   </div>
 
@@ -131,7 +131,7 @@
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:var(--orange)"></div>Offers</div><span class="card-count" id="c-offers">—</span></div>
-      <table class="data-table"><thead><tr><th>Address</th><th>Offer Price</th><th>Status</th></tr></thead><tbody id="b-offers"><tr class="empty-row"><td colspan="3">Loading...</td></tr></tbody></table>
+      <table class="data-table"><thead><tr><th>Address</th><th>Offer Price</th><th>Status</th><th>Notes</th></tr></thead><tbody id="b-offers"><tr class="empty-row"><td colspan="3">Loading...</td></tr></tbody></table>
     </div>
   </div>
 
@@ -281,14 +281,11 @@ async function loadAll() {
 
   // Upcoming Listings
   // Filter upcoming strictly - must have Owner or Status to be a real upcoming listing
-  const upcomingData = upcoming.filter(r => 
-    r['Address'] && r['Address'].trim() !== '' && r['Address'].trim() !== 'Address' &&
-    (r['Owner'] || r['Status'])
-  );
+  const upcomingData = upcoming.filter(r => r['Address'] && r['Address'].trim() !== '' && r['Address'].trim() !== 'Address');
   set('s-upcoming', upcomingData.length);
   set('c-upcoming', upcomingData.length);
   html('b-upcoming', upcomingData.length ? upcomingData.map(r =>
-    `<tr><td>${r['Address']||''}</td><td>${r['Owner']||''}</td><td>${r['Price']||''}</td><td>${badge(r['Status'])}</td></tr>`
+    `<tr><td>${r['Address']||''}</td><td>${r['Owner']||''}</td><td>${r['Price']||''}</td><td>${badge(r['Status'])}</td><td>${r['Notes']||''}</td></tr>`
   ).join('') : empty(4, 'No upcoming listings'));
 
   // Transactions
@@ -307,7 +304,7 @@ async function loadAll() {
   set('s-offers', offers.length);
   set('c-offers', offers.length);
   html('b-offers', offers.length ? offers.map(r =>
-    `<tr><td>${r['Address']||''}</td><td>${r['Offer Price']||''}</td><td>${badge(r['Status'])}</td></tr>`
+    `<tr><td>${r['Address']||''}</td><td>${r['Offer Price']||''}</td><td>${badge(r['Status'])}</td><td>${r['Notes']||''}</td></tr>`
   ).join('') : empty(3, 'No active offers'));
 
   // Showings
@@ -335,13 +332,14 @@ async function loadAll() {
   ).join('') : empty(5, 'No content scheduled'));
 
   // Projects
-  html('b-projects', projects.length ? projects.map(r =>
-    `<tr><td><strong>${r['Project']||''}</strong></td><td>${r['Description']||''}</td><td>${r['Assigned To']||''}</td><td>${r['Due Date']||'TBD'}</td><td>${badge(r['Status'])}</td></tr>`
+  const projectData = projects.filter(r => r['Project'] && r['Project'].trim() !== '' && r['Project'].trim() !== 'Project');
+  html('b-projects', projectData.length ? projectData.map(r =>
+    `<tr><td><strong>${r['Project']||''}</strong></td><td>${r['Description']||''}</td><td>${r['Assigned To']||r['Assigned to']||''}</td><td>${r['Due Date']||r['Due date']||'TBD'}</td><td>${badge(r['Status'])}</td></tr>`
   ).join('') : empty(5, 'No projects added'));
 
   // Commissions
   html('b-commissions', commissions.length ? commissions.map(r =>
-    `<div class="comm-cell"><div class="comm-month">${r['Month']||''}</div><div class="comm-amount">${r['Gross GCI']||'—'}</div><div class="comm-net">${r['Sales Volume']?'Vol: '+r['Sales Volume']:r['Notes']||''}</div></div>`
+    `<div class="comm-cell"><div class="comm-month">${r['Month']||''}</div><div class="comm-amount">${r['Gross GCI']||r['Gross CGI']||'—'}</div><div class="comm-net">${r['Sales Volume']?'Vol: '+r['Sales Volume']:r['Notes']||r['notes']||''}</div></div>`
   ).join('') : '<div class="comm-cell"><div class="comm-month">No data</div><div class="comm-amount">—</div></div>');
 
   const now = new Date();
