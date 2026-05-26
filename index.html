@@ -7,9 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy: #39374f; --navy-light: #4a4766; --blue: #7BA7BC; --blue-light: #a8c8d8;
-    --blue-pale: #EBF3F7; --blue-faint: #f4f9fb; --white: #ffffff; --off-white: #F9F8F5;
-    --dark: #1e1d2e; --mid: #6b7280; --rule: #e5e7eb;
+    --navy: #39374f; --blue: #7BA7BC; --blue-light: #a8c8d8;
+    --blue-pale: #EBF3F7; --blue-faint: #f4f9fb; --white: #ffffff;
+    --off-white: #F9F8F5; --dark: #1e1d2e; --mid: #6b7280; --rule: #e5e7eb;
     --green: #22c55e; --green-pale: #f0fdf4; --yellow: #f59e0b; --yellow-pale: #fffbeb;
     --red: #ef4444; --red-pale: #fef2f2; --orange: #f97316; --orange-pale: #fff7ed;
     --purple: #8b5cf6; --purple-pale: #f5f3ff;
@@ -76,13 +76,12 @@
   .comm-amount { font-size:16px; font-weight:700; color:var(--navy); font-family:'DM Mono',monospace; }
   .comm-net { font-size:10px; color:var(--mid); margin-top:2px; }
   .empty-row td { text-align:center; color:var(--mid); font-size:11px; font-style:italic; padding:20px !important; background:white !important; }
-  .error-banner { background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:12px; color:#dc2626; display:none; }
   .last-updated { text-align:center; padding:20px; font-size:11px; color:var(--mid); font-family:'DM Mono',monospace; }
   @media (max-width:768px) {
-    .main { padding:16px; } .stats-row { grid-template-columns:repeat(2,1fr); }
-    .stats-row .stat-card:last-child { grid-column:span 2; }
-    .section-row { grid-template-columns:1fr; } .header { padding:0 16px; }
-    .header-sub { display:none; } .comm-grid { grid-template-columns:repeat(2,1fr); }
+    .main{padding:16px;} .stats-row{grid-template-columns:repeat(2,1fr);}
+    .stats-row .stat-card:last-child{grid-column:span 2;}
+    .section-row{grid-template-columns:1fr;} .header{padding:0 16px;}
+    .header-sub{display:none;} .comm-grid{grid-template-columns:repeat(2,1fr);}
   }
 </style>
 </head>
@@ -103,8 +102,6 @@
 </header>
 
 <div class="main">
-  <div class="error-banner" id="error-banner"></div>
-
   <div class="stats-row">
     <div class="stat-card blue"><div class="stat-label">Active Listings</div><div class="stat-value" id="s-listings">—</div><div class="stat-sub" id="s-listings-sub">Loading...</div></div>
     <div class="stat-card green"><div class="stat-label">Active Transactions</div><div class="stat-value" id="s-tx">—</div><div class="stat-sub" id="s-tx-sub">Loading...</div></div>
@@ -116,11 +113,11 @@
   <div class="section-row">
     <div class="card">
       <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:var(--blue)"></div>Active Listings</div><span class="card-count" id="c-listings">—</span></div>
-      <table class="data-table"><thead><tr><th>Address</th><th>Exp Date</th><th>Days Left</th><th>Price</th><th>Comm %</th></tr></thead><tbody id="b-listings"><tr class="empty-row"><td colspan="4">Loading...</td></tr></tbody></table>
+      <table class="data-table"><thead><tr><th>Address</th><th>Exp Date</th><th>Days Left</th><th>Price</th><th>Comm %</th></tr></thead><tbody id="b-listings"><tr class="empty-row"><td colspan="5">Loading...</td></tr></tbody></table>
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:var(--yellow)"></div>Upcoming Listings</div><span class="card-count" id="c-upcoming">—</span></div>
-      <table class="data-table"><thead><tr><th>Address</th><th>Owner</th><th>Price</th><th>Status</th><th>Notes</th></tr></thead><tbody id="b-upcoming"><tr class="empty-row"><td colspan="4">Loading...</td></tr></tbody></table>
+      <table class="data-table"><thead><tr><th>Address</th><th>Owner</th><th>Price</th><th>Status</th><th>Notes</th></tr></thead><tbody id="b-upcoming"><tr class="empty-row"><td colspan="5">Loading...</td></tr></tbody></table>
     </div>
   </div>
 
@@ -131,7 +128,7 @@
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:var(--orange)"></div>Offers</div><span class="card-count" id="c-offers">—</span></div>
-      <table class="data-table"><thead><tr><th>Address</th><th>Offer Price</th><th>Status</th><th>Notes</th></tr></thead><tbody id="b-offers"><tr class="empty-row"><td colspan="3">Loading...</td></tr></tbody></table>
+      <table class="data-table"><thead><tr><th>Address</th><th>Offer Price</th><th>Status</th><th>Notes</th></tr></thead><tbody id="b-offers"><tr class="empty-row"><td colspan="4">Loading...</td></tr></tbody></table>
     </div>
   </div>
 
@@ -160,7 +157,7 @@
   <div class="section-row">
     <div class="card">
       <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:var(--green)"></div>Marketing & Content This Week</div></div>
-      <table class="data-table"><thead><tr><th>Piece / Campaign</th><th>Channel</th><th>Assigned To</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="b-content"><tr class="empty-row"><td colspan="5">Loading...</td></tr></tbody></table>
+      <table class="data-table"><thead><tr><th>Piece</th><th>Channel</th><th>Assigned To</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="b-content"><tr class="empty-row"><td colspan="5">Loading...</td></tr></tbody></table>
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:var(--purple)"></div>Projects & Ideas</div></div>
@@ -179,40 +176,124 @@
 </div>
 
 <script>
-// ── YOUR GOOGLE SHEET PUBLISHED URL (base) ────────────────────────────────
-// We use the JSON feed approach via Google Visualization API - no CORS issues
 const SHEET_ID = '1hLGjN4898jIzEs5ike58FZQ2Ffj_GmWrwEWzOV9p7Yc';
 
-function gvizURL(sheetName) {
-  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
-}
+// Sheet names used directly for fetching
 
-async function fetchSheet(sheetName) {
+// Fetch using CSV export - reliable for named sheets
+async function fetchByGID(sheetName) {
+  const pubId = '2PACX-1vSR5zL7OWr2m7l0gnNm548tXzq3-tWMTxPI3RG_bfwXUt93EmKmoMglseNVim6FjnGix20hDMm5tFZf';
+  const csvUrl = `https://docs.google.com/spreadsheets/d/e/${pubId}/pub?output=csv&gid=`;
+
+  // GID map - obtained from sheet URLs
+  const gids = {
+    'Active Listings':    '0',
+    'Upcoming Listings':  '1346410938',
+    'Showings':           '1912479771',
+    'Transactions':       '1649808578',
+    'Offers':             '589889827',
+    'Potential Buyers':   '1161439024',
+    'Potential Sellers':  '1586696884',
+    'Marketing Content':  '1995702560',
+    'Projects Ideas':     '1029035405',
+    'Commissions':        '2031912194'
+  };
+
+  // Try CSV first (most reliable for named sheets)
   try {
-    const url = gvizURL(sheetName);
+    const gid = gids[sheetName] || '0';
+    const url = csvUrl + gid;
     const res = await fetch(url);
+    if (!res.ok) throw new Error('CSV fetch failed');
     const text = await res.text();
-    // Google wraps the JSON in /*O_o*/\ngoogle.visualization.Query.setResponse(...)
-    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-    if (!json.table || !json.table.rows) return [];
-    const cols = json.table.cols.map(c => c.label);
-    return json.table.rows.map(row => {
-      const obj = {};
-      cols.forEach((col, i) => {
-        obj[col] = row.c[i] ? (row.c[i].f || row.c[i].v || '') : '';
-        if (obj[col] === null) obj[col] = '';
-        obj[col] = String(obj[col]).trim();
-      });
-      return obj;
-    }).filter(r => Object.values(r).some(v => v !== '' && v !== 'null'));
+    return parseCSV(text);
   } catch(e) {
-    console.error(`Error fetching ${sheetName}:`, e);
-    return [];
+    // Fallback to gviz
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/);
+      if (!match) return [];
+      const json = JSON.parse(match[1]);
+      if (!json.table || !json.table.rows || !json.table.cols) return [];
+      const cols = json.table.cols.map(c => c.label || '');
+      return json.table.rows.map(row => {
+        const obj = {};
+        cols.forEach((col, i) => {
+          const cell = row.c[i];
+          let val = cell ? (cell.f ?? cell.v ?? '') : '';
+          obj[col] = String(val).trim();
+        });
+        return obj;
+      }).filter(r => Object.values(r).some(v => v && v !== 'null' && v !== ''));
+    } catch(e2) {
+      console.error('Both fetch methods failed for', sheetName, e2);
+      return [];
+    }
   }
 }
 
+function parseCSV(text) {
+  const lines = text.split(/\r?\n/);
+  if (lines.length < 2) return [];
+  
+  function splitCSVLine(line) {
+    const result = [];
+    let inQuotes = false;
+    let current = '';
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') {
+        if (inQuotes && line[i+1] === '"') { current += '"'; i++; }
+        else inQuotes = !inQuotes;
+      } else if (line[i] === ',' && !inQuotes) {
+        result.push(current.trim()); current = '';
+      } else { current += line[i]; }
+    }
+    result.push(current.trim());
+    return result;
+  }
+  
+  const headers = splitCSVLine(lines[0]).map(h => h.replace(/^"|"$/g,'').trim());
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const vals = splitCSVLine(lines[i]);
+    const obj = {};
+    headers.forEach((h, idx) => {
+      obj[h] = (vals[idx] || '').replace(/^"|"$/g,'').trim();
+    });
+    if (Object.values(obj).some(v => v && v !== '')) rows.push(obj);
+  }
+  return rows;
+}
+
+// Helper to get value case-insensitively
+function v(row, ...keys) {
+  for (const key of keys) {
+    for (const k of Object.keys(row)) {
+      if (k.toLowerCase().trim() === key.toLowerCase().trim() && row[k] && row[k] !== 'null') {
+        return row[k];
+      }
+    }
+  }
+  return '';
+}
+
+function isHeader(row) {
+  // Only flag as header if ALL non-empty values are common header words
+  const vals = Object.values(row).filter(v => v && v.trim() !== '').map(v => String(v).toLowerCase().trim());
+  const headerWords = ['address','name','owner','project','piece','month','status','price','date','contact','notes','description'];
+  if (vals.length === 0) return false;
+  return vals.every(v => headerWords.includes(v));
+}
+
+function clean(rows) {
+  return rows.filter(r => !isHeader(r) && Object.values(r).some(val => val && val.trim() !== ''));
+}
+
 function daysLeft(dateStr) {
-  if (!dateStr || dateStr === '') return null;
+  if (!dateStr) return null;
   const exp = new Date(dateStr);
   if (isNaN(exp)) return null;
   const today = new Date(); today.setHours(0,0,0,0);
@@ -235,10 +316,9 @@ function badge(status) {
   if (s.includes('process') || s.includes('progress')) return `<span class="badge badge-orange">${status}</span>`;
   if (s.includes('ready') || s.includes('sign')) return `<span class="badge badge-green">${status}</span>`;
   if (s.includes('done') || s.includes('complete') || s.includes('live')) return `<span class="badge badge-green">${status}</span>`;
-  if (s.includes('pending') || s.includes('planned')) return `<span class="badge badge-grey">${status}</span>`;
+  if (s.includes('pending')) return `<span class="badge badge-yellow">${status}</span>`;
   if (s.includes('accept')) return `<span class="badge badge-green">${status}</span>`;
   if (s.includes('reject') || s.includes('cancel')) return `<span class="badge badge-red">${status}</span>`;
-  if (s.includes('counter')) return `<span class="badge badge-yellow">${status}</span>`;
   return `<span class="badge badge-blue">${status}</span>`;
 }
 
@@ -246,101 +326,115 @@ function empty(cols, msg='No data yet') {
   return `<tr class="empty-row"><td colspan="${cols}">${msg}</td></tr>`;
 }
 
-function set(id, val) { document.getElementById(id).textContent = val; }
-function html(id, val) { document.getElementById(id).innerHTML = val; }
+function set(id, val) { const el = document.getElementById(id); if(el) el.textContent = val; }
+function html(id, val) { const el = document.getElementById(id); if(el) el.innerHTML = val; }
 
 async function loadAll() {
   set('last-updated', 'Refreshing...');
 
   const [listings, upcoming, showings, transactions, offers,
          buyers, sellers, content, projects, commissions] = await Promise.all([
-    fetchSheet('Active Listings'),
-    fetchSheet('Upcoming Listings'),
-    fetchSheet('Showings'),
-    fetchSheet('Transactions'),
-    fetchSheet('Offers'),
-    fetchSheet('Potential Buyers'),
-    fetchSheet('Potential Sellers'),
-    fetchSheet('Marketing Content'),
-    fetchSheet('Projects Ideas'),
-    fetchSheet('Commissions'),
+    fetchByGID('Active Listings'),
+    fetchByGID('Upcoming Listings'),
+    fetchByGID('Showings'),
+    fetchByGID('Transactions'),
+    fetchByGID('Offers'),
+    fetchByGID('Potential Buyers'),
+    fetchByGID('Potential Sellers'),
+    fetchByGID('Marketing Content'),
+    fetchByGID('Projects Ideas'),
+    fetchByGID('Commissions'),
   ]);
 
-  // Active Listings
-  set('s-listings', listings.length);
-  set('c-listings', listings.length);
-  const expiring = listings.filter(r => { const d = daysLeft(r['Expiration Date']); return d !== null && d <= 30 && d > 0; });
-  set('s-listings-sub', expiring.length > 0 ? `${expiring.length} expiring within 30 days` : 'All listings active');
-  html('b-listings', listings.length ? listings.map(r => {
-    const reduced = r['Price Reduced'] && r['Price Reduced'].toLowerCase() !== 'no' && r['Price Reduced'] !== '';
-    const priceHTML = reduced
-      ? `<span class="price-red">↓ ${r['Price']}</span> <span style="color:var(--mid);font-size:10px">was ${r['Old Price']}</span>`
-      : r['Price'];
-    return `<tr><td>${r['Address']||''}</td><td>${r['Expiration Date']||''}</td><td>${daysChip(r['Expiration Date'])}</td><td>${priceHTML}</td><td>${r['Commission %']||''}</td></tr>`;
-  }).join('') : empty(4, 'No active listings'));
+  // ACTIVE LISTINGS
+  const ld = clean(listings).filter(r => v(r,'Address') && v(r,'Expiration Date','expiration date'));
+  set('s-listings', ld.length); set('c-listings', ld.length);
+  const exp30 = ld.filter(r => { const d = daysLeft(v(r,'Expiration Date','expiration date')); return d !== null && d <= 30 && d > 0; });
+  set('s-listings-sub', exp30.length > 0 ? `${exp30.length} expiring within 30 days` : 'All listings active');
+  html('b-listings', ld.length ? ld.map(r => {
+    const price = v(r,'Price','price');
+    const reduced = v(r,'Price Reduced','price reduced');
+    const oldPrice = v(r,'Old Price','old price');
+    const priceHTML = (reduced && reduced.toLowerCase() !== 'no' && reduced !== '')
+      ? `<span class="price-red">↓ ${price}</span> <span style="color:var(--mid);font-size:10px">was ${oldPrice}</span>`
+      : price;
+    const expDate = v(r,'Expiration Date','expiration date');
+    return `<tr><td>${v(r,'Address')}</td><td>${expDate}</td><td>${daysChip(expDate)}</td><td>${priceHTML}</td><td>${v(r,'Commission %','commission %','Comm %','comm %')}</td></tr>`;
+  }).join('') : empty(5,'No active listings'));
 
-  // Upcoming Listings
-  // Filter upcoming strictly - must have Owner or Status to be a real upcoming listing
-  const upcomingData = upcoming.filter(r => r['Address'] && r['Address'].trim() !== '' && r['Address'].trim() !== 'Address');
-  set('s-upcoming', upcomingData.length);
-  set('c-upcoming', upcomingData.length);
-  html('b-upcoming', upcomingData.length ? upcomingData.map(r =>
-    `<tr><td>${r['Address']||''}</td><td>${r['Owner']||''}</td><td>${r['Price']||''}</td><td>${badge(r['Status'])}</td><td>${r['Notes']||''}</td></tr>`
-  ).join('') : empty(4, 'No upcoming listings'));
+  // UPCOMING LISTINGS - strict filter: needs Address AND (Owner OR Status)
+  const ud = clean(upcoming).filter(r => v(r,'Address') && (v(r,'Owner') || v(r,'Status')));
+  set('s-upcoming', ud.length); set('c-upcoming', ud.length);
+  html('b-upcoming', ud.length ? ud.map(r =>
+    `<tr><td>${v(r,'Address')}</td><td>${v(r,'Owner')}</td><td>${v(r,'Price')}</td><td>${badge(v(r,'Status'))}</td><td>${v(r,'Notes','notes')}</td></tr>`
+  ).join('') : empty(5,'No upcoming listings'));
 
-  // Transactions
-  set('s-tx', transactions.length);
-  set('c-tx', transactions.length);
-  const nextClose = transactions.reduce((acc, r) => {
-    const d = new Date(r['Closing Date']);
-    return (!acc || (!isNaN(d) && d < acc.d)) ? {d, label:r['Closing Date']} : acc;
+  // TRANSACTIONS
+  const td = clean(transactions).filter(r => v(r,'Address') && v(r,'Purchase Price','purchase price'));
+  set('s-tx', td.length); set('c-tx', td.length);
+  const nextClose = td.reduce((acc, r) => {
+    const d = new Date(v(r,'Closing Date','closing date'));
+    return (!acc || (!isNaN(d) && d < acc.d)) ? {d, label:v(r,'Closing Date','closing date')} : acc;
   }, null);
   set('s-tx-sub', nextClose ? `Next closing: ${nextClose.label}` : 'No closings scheduled');
-  html('b-tx', transactions.length ? transactions.map(r =>
-    `<tr><td>${r['Address']||''}</td><td>${r['Purchase Price']||''}</td><td>${r['Commission %']||''}</td><td>${r['Inspection Date']||'—'}</td><td><strong>${r['Closing Date']||''}</strong></td></tr>`
-  ).join('') : empty(5, 'No active transactions'));
+  html('b-tx', td.length ? td.map(r =>
+    `<tr><td>${v(r,'Address')}</td><td>${v(r,'Purchase Price','purchase price')}</td><td>${v(r,'Commission %','comm %','Commission%')}</td><td>${v(r,'Inspection Date','inspection date')}</td><td><strong>${v(r,'Closing Date','closing date')}</strong></td></tr>`
+  ).join('') : empty(5,'No active transactions'));
 
-  // Offers
-  set('s-offers', offers.length);
-  set('c-offers', offers.length);
-  html('b-offers', offers.length ? offers.map(r =>
-    `<tr><td>${r['Address']||''}</td><td>${r['Offer Price']||''}</td><td>${badge(r['Status'])}</td><td>${r['Notes']||''}</td></tr>`
-  ).join('') : empty(3, 'No active offers'));
+  // OFFERS
+  const od = clean(offers).filter(r => v(r,'Address') && v(r,'Offer Price','offer price'));
+  set('s-offers', od.length); set('c-offers', od.length);
+  html('b-offers', od.length ? od.map(r =>
+    `<tr><td>${v(r,'Address')}</td><td>${v(r,'Offer Price','offer price')}</td><td>${badge(v(r,'Status'))}</td><td>${v(r,'Notes','notes')}</td></tr>`
+  ).join('') : empty(4,'No active offers'));
 
-  // Showings
-  set('c-showings', showings.length);
-  html('b-showings', showings.length ? showings.map(r =>
-    `<tr><td>${r['Address']||''}</td><td>${r['Date']||''}</td><td>${r['Time']||''}</td><td>${r['Agent']||''}</td><td>${r['Requested By']||''}</td><td>${r['Phone']||''}</td><td>${r['Email']||''}</td></tr>`
-  ).join('') : empty(7, 'No showings scheduled'));
+  // SHOWINGS
+  const sd = clean(showings).filter(r => v(r,'Address'));
+  set('c-showings', sd.length);
+  html('b-showings', sd.length ? sd.map(r =>
+    `<tr><td>${v(r,'Address')}</td><td>${v(r,'Date','date')}</td><td>${v(r,'Time','time')}</td><td>${v(r,'Agent','agent')}</td><td>${v(r,'Requested By','Requestd By','requested by','requestd by')}</td><td>${v(r,'Phone','phone')}</td><td>${v(r,'Email','email')}</td></tr>`
+  ).join('') : empty(7,'No showings scheduled'));
 
-  // Buyers
-  set('c-buyers', buyers.length);
-  html('b-buyers', buyers.length ? buyers.map(r =>
-    `<tr><td>${r['Name']||r['Full Name']||''}</td><td>${r['Contact']||''}</td><td>${r['Looking For']||''}</td><td>${r['Visit Date']||'—'}</td></tr>`
-  ).join('') : empty(4, 'No potential buyers'));
+  // BUYERS
+  const byd = clean(buyers).filter(r => { const n = v(r,'Name','Full Name','name','full name'); return n && n !== 'Name' && n !== 'Full Name' && n.trim() !== ''; });
+  set('c-buyers', byd.length);
+  html('b-buyers', byd.length ? byd.map(r =>
+    `<tr><td>${v(r,'Name','Full Name','name','full name')}</td><td>${v(r,'Contact','contact')}</td><td>${v(r,'Looking For','Looking for','looking for')}</td><td>${v(r,'Visit Date','visit date')}</td></tr>`
+  ).join('') : empty(4,'No potential buyers'));
 
-  // Sellers
-  set('c-sellers', sellers.length);
-  html('b-sellers', sellers.length ? sellers.map(r =>
-    `<tr><td>${r['Owner']||''}</td><td>${r['Address']||''}</td><td>${r['Contact']||''}</td><td>${r['Notes']||''}</td></tr>`
-  ).join('') : empty(4, 'No potential sellers'));
-  set('s-pipeline', buyers.length + sellers.length);
+  // SELLERS
+  const seld = clean(sellers).filter(r => { const o = v(r,'Owner','owner'); return o && o !== 'Owner' && o.trim() !== ''; });
+  set('c-sellers', seld.length);
+  html('b-sellers', seld.length ? seld.map(r =>
+    `<tr><td>${v(r,'Owner','owner')}</td><td>${v(r,'Address','address')}</td><td>${v(r,'Contact','contact')}</td><td>${v(r,'Notes','notes')}</td></tr>`
+  ).join('') : empty(4,'No potential sellers'));
 
-  // Content
-  html('b-content', content.length ? content.map(r =>
-    `<tr><td>${r['Piece']||''}</td><td>${r['Channel']||''}</td><td>${r['Assigned to']||r['Assigned To']||''}</td><td>${r['Due date']||r['Due Date']||''}</td><td>${badge(r['Status'])}</td></tr>`
-  ).join('') : empty(5, 'No content scheduled'));
+  set('s-pipeline', byd.length + seld.length);
 
-  // Projects
-  const projectData = projects.filter(r => r['Project'] && r['Project'].trim() !== '' && r['Project'].trim() !== 'Project');
-  html('b-projects', projectData.length ? projectData.map(r =>
-    `<tr><td><strong>${r['Project']||''}</strong></td><td>${r['Description']||''}</td><td>${r['Assigned To']||r['Assigned to']||''}</td><td>${r['Due Date']||r['Due date']||'TBD'}</td><td>${badge(r['Status'])}</td></tr>`
-  ).join('') : empty(5, 'No projects added'));
+  // MARKETING CONTENT
+  const cd = clean(content).filter(r => v(r,'Piece','piece'));
+  html('b-content', cd.length ? cd.map(r =>
+    `<tr><td>${v(r,'Piece','piece')}</td><td>${v(r,'Channel','channel')}</td><td>${v(r,'Assigned to','Assigned To','assigned to')}</td><td>${v(r,'Due date','Due Date','due date')}</td><td>${badge(v(r,'Status','status'))}</td></tr>`
+  ).join('') : empty(5,'No content scheduled'));
 
-  // Commissions
-  html('b-commissions', commissions.length ? commissions.map(r =>
-    `<div class="comm-cell"><div class="comm-month">${r['Month']||''}</div><div class="comm-amount">${r['Gross GCI']||r['Gross CGI']||'—'}</div><div class="comm-net">${r['Sales Volume']?'Vol: '+r['Sales Volume']:r['Notes']||r['notes']||''}</div></div>`
-  ).join('') : '<div class="comm-cell"><div class="comm-month">No data</div><div class="comm-amount">—</div></div>');
+  // PROJECTS
+  const pd = clean(projects).filter(r => { const p = v(r,'Project','project'); return p && p !== 'Project' && p.trim() !== ''; });
+  html('b-projects', pd.length ? pd.map(r =>
+    `<tr><td><strong>${v(r,'Project','project')}</strong></td><td>${v(r,'Description','description')}</td><td>${v(r,'Assigned to','Assigned To','assigned to')}</td><td>${v(r,'Due date','Due Date','due date')}</td><td>${badge(v(r,'Status','status'))}</td></tr>`
+  ).join('') : empty(5,'No projects added'));
+
+  // COMMISSIONS
+  const comd = clean(commissions).filter(r => v(r,'Month','month'));
+  html('b-commissions', comd.length ? comd.map(r => {
+    const month = v(r,'Month','month'); const gci = v(r,'Gross CGI','gross cgi','Gross GCI','gross gci','GCI','CGI','Gross CGl','gross cgl');
+    const vol = v(r,'Sales Volume','sales volume');
+    const notes = v(r,'Notes','notes');
+    return `<div class="comm-cell">
+      <div class="comm-month">${month}</div>
+      <div class="comm-amount">${gci||'—'}</div>
+      <div class="comm-net">${vol?'Vol: '+vol:notes||''}</div>
+    </div>`;
+  }).join('') : '<div class="comm-cell"><div class="comm-month">No data</div><div class="comm-amount">—</div><div class="comm-net">Add data to Commissions tab</div></div>');
 
   const now = new Date();
   set('last-updated', `Last updated: ${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})} at ${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})} · Managed by Andrea · DSG Operations`);
