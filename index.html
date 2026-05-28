@@ -211,15 +211,15 @@ async function fetchByGID(sheetName) {
   // GID map - obtained from sheet URLs
   const gids = {
     'Active Listings':    '0',
-    'Upcoming Listings':  '1346410938',
+    'Upcoming Listings':  '589889827',
     'Showings':           '1912479771',
     'Transactions':       '1649808578',
-    'Offers':             '589889827',
+    'Offers':             '1410582295',
     'Potential Buyers':   '1161439024',
-    'Potential Sellers':  '1586696884',
+    'Potential Sellers':  '1291207497',
     'Marketing Content':  '1995702560',
-    'Projects Ideas':     '1029035405',
-    'Commissions':        '2031912194'
+    'Projects Ideas':     '1607755453',
+    'Commissions':        '1176723230'
   };
 
   // Try CSV first (most reliable for named sheets)
@@ -339,6 +339,7 @@ function badge(status) {
   if (s.includes('process') || s.includes('progress')) return `<span class="badge badge-orange">${status}</span>`;
   if (s.includes('ready') || s.includes('sign')) return `<span class="badge badge-green">${status}</span>`;
   if (s.includes('done') || s.includes('complete') || s.includes('live')) return `<span class="badge badge-green">${status}</span>`;
+  if (s.includes('paid')) return `<span class="badge badge-green">${status}</span>`;
   if (s.includes('pending')) return `<span class="badge badge-yellow">${status}</span>`;
   if (s.includes('accept')) return `<span class="badge badge-green">${status}</span>`;
   if (s.includes('reject') || s.includes('cancel')) return `<span class="badge badge-red">${status}</span>`;
@@ -395,10 +396,14 @@ async function loadAll() {
   // TRANSACTIONS
   const td = clean(transactions).filter(r => v(r,'Address') && v(r,'Purchase Price','purchase price'));
   set('s-tx', td.length); set('c-tx', td.length);
-  const nextClose = td.reduce((acc, r) => {
-    const d = new Date(v(r,'Closing Date','closing date'));
-    return (!acc || (!isNaN(d) && d < acc.d)) ? {d, label:v(r,'Closing Date','closing date')} : acc;
-  }, null);
+  let nextClose = null;
+  td.forEach(r => {
+    const label = v(r,'Closing Date','closing date');
+    const d = new Date(label);
+    if (!isNaN(d) && (!nextClose || d < nextClose.d)) {
+      nextClose = {d, label};
+    }
+  });
   set('s-tx-sub', nextClose ? `Next closing: ${nextClose.label}` : 'No closings scheduled');
   html('b-tx', td.length ? td.map(r =>
     `<tr><td>${v(r,'Address')}</td><td>${v(r,'Purchase Price','purchase price')}</td><td>${v(r,'Commission %','comm %','Commission%')}</td><td>${v(r,'Inspection Date','inspection date')}</td><td><strong>${v(r,'Closing Date','closing date')}</strong></td></tr>`
@@ -457,26 +462,47 @@ async function loadAll() {
       if (kl === 'project') proj = val;
       else if (kl === 'description') desc = val;
       else if (kl === 'assigned to') assigned = val;
-      else if (kl === 'due date' || kl === 'due date') due = val;
+      else if (kl === 'due' || kl === 'due date') due = val;
       else if (kl === 'status') status = val;
     }
     return `<tr><td><strong>${proj}</strong></td><td>${desc}</td><td>${assigned}</td><td>${due}</td><td>${badge(status)}</td></tr>`;
   }).join('') : empty(5,'No projects added'));
 
   // COMMISSIONS
-  const comd = clean(commissions).filter(r => v(r,'Month','month'));
+  function moneyValue(val) {
+    if (!val) return 0;
+    const n = Number(String(val).replace(/[^0-9.-]/g, ''));
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function moneyFormat(n) {
+    return n.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0
+    });
+  }
+
+  const comd = clean(commissions).filter(r => v(r,'Month','month') || v(r,'Address','address'));
+  const totalVolume = comd.reduce((sum, r) => sum + moneyValue(v(r,'Sales Volume','sales volume')), 0);
+  const totalGci = comd.reduce((sum, r) => sum + moneyValue(v(r,'Gross CGI','Gross GCI','gross cgi','gross gci','GCI','CGI')), 0);
+  const totalNet = comd.reduce((sum, r) => sum + moneyValue(v(r,'Net Commission','net commission','Net','net')), 0);
+
+  set('comm-vol', moneyFormat(totalVolume));
+  set('comm-gci', moneyFormat(totalGci));
+  set('comm-net', moneyFormat(totalNet));
+  set('comm-deals', comd.length);
+
   html('b-commissions', comd.length ? comd.map(r => {
-    let month='', vol='', gci='', net='', notes='';
-    for (const [k,val] of Object.entries(r)) {
-      const kl = k.toLowerCase().trim();
-      if (kl === 'month') month = val;
-      else if (kl === 'sales volume') vol = val;
-      else if (kl === 'gross cgi' || kl === 'gross gci' || kl === 'gci' || kl === 'cgi') gci = val;
-      else if (kl === 'net commission' || kl === 'net') net = val;
-      else if (kl === 'notes') notes = val;
-    }
-    return `<tr><td><strong>${month}</strong></td><td>${vol}</td><td>${gci||'—'}</td><td>${net||'—'}</td><td>${notes}</td></tr>`;
-  }).join('') : empty(5, 'Add data to Commissions tab'));
+    const month = v(r,'Month','month');
+    const address = v(r,'Address','address','Property','property');
+    const volume = v(r,'Sales Volume','sales volume');
+    const gci = v(r,'Gross CGI','Gross GCI','gross cgi','gross gci','GCI','CGI');
+    const net = v(r,'Net Commission','net commission','Net','net');
+    const status = v(r,'Status','status','Notes','notes');
+
+    return `<tr><td><strong>${month}</strong></td><td>${address||'—'}</td><td>${volume||'—'}</td><td>${gci||'—'}</td><td>${net||'—'}</td><td>${badge(status)}</td></tr>`;
+  }).join('') : empty(6, 'Add data to Commissions tab'));
 
   const now = new Date();
   set('last-updated', `Last updated: ${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})} at ${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})} · Managed by Andrea · DSG Operations`);
